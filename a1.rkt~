@@ -111,28 +111,6 @@ Read through the starter code carefully. In particular, look for:
   (and (<= (string-length s1) (string-length s2))
        (equal? s1 (substring s2 0 (string-length s1)))))
 
-(define (get-dramatis-helper l acc)
-  (if (string=? personae (first l))
-      (get-dramatis-helper (rest l) acc)
-      (if (string=? finis (first l))
-          acc
-          (get-dramatis-helper (rest l) (append acc (list (first l)))))))
-
-(define (get-dramatis l)
-  (get-dramatis-helper l '()))
-
-(define (get-settings-helper l acc bool)
-  (if (string=? settings (first l))
-      (get-settings-helper (rest l) acc #t)
-      (if (and (string=? finis (first l)) bool)
-          acc
-          (if (eq? #t bool)
-              (get-settings-helper (rest l) (append acc (list (first l))) #t)
-              (get-settings-helper (rest l) '() #f)))))
-
-(define (get-settings l)
-  (get-settings-helper l '() #f))
-
 ;------------------------------------------------------------------------------
 ; Main evaluation (YOUR WORK GOES HERE)
 ;------------------------------------------------------------------------------
@@ -148,7 +126,7 @@ Read through the starter code carefully. In particular, look for:
 |#
 (define (evaluate body)
   ; TODO: Change this part!
-  (get-settings body))
+  body)
 
 
  (interpret "sample.txt")
