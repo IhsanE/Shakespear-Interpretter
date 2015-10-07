@@ -127,3 +127,6 @@ Read through the starter code carefully. In particular, look for:
 (define (evaluate body)
   ; TODO: Change this part!
   body)
+
+
+ (interpret "sample.txt")
