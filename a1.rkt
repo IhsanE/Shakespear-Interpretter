@@ -139,11 +139,11 @@ Read through the starter code carefully. In particular, look for:
 
 (define (get-finis-count l)
   (foldl (lambda (x y) (if (string=? finis x) (+ 1 y) y)) 0 l))
-
+#|
 (define (get-dialogue l)
   (let* ([finis-count (get-finis-count body)])
    (get-dialogue-helper l finis-count 0))
-)
+)|#
 
 #|
 Return true iff list contains s.
@@ -158,27 +158,29 @@ desc should be a list of words.
 |#
 (define (count-bad-words-helper desc)
   (if (null? desc) 0 
-  (if (list-contains bad-words (first desc)) (+ 1 (count-bad-words-helper (rest desc)))
-      (count-bad-words-helper (rest desc))))
+      (if (list-contains bad-words (first desc)) (+ 1 (count-bad-words-helper (rest desc)))
+          (count-bad-words-helper (rest desc))))
   )
 
 #|
 Given string 'desc' return the integer value of the description.
 |#
 (define (eval-description-helper desc)
-   (if (> (count-bad-words-helper (string-split desc)) 0)
-       (* -1 (* (expt 2 (count-bad-words-helper (string-split desc))) (length (string-split desc))))
-       (length (string-split desc)))
-   )
+  (if (> (count-bad-words-helper (string-split desc)) 0)
+      (* -1 (* (expt 2 (count-bad-words-helper (string-split desc))) (length (string-split desc))))
+      (length (string-split desc)))
+  )
 
 #|
     Return a list of lists, where each inner list is a pair of
     (<name>, <value>) for the Dramatis Personae section.
+    d-list is a list of strings where each is a Dramatis Personae line.
 |#
 (define (parse-dramatis-bindings d-list)
-  (
-   #t
-   ))
+  (map (lambda (d) (list (first (string-split d ","))
+                         (eval-description-helper (string-join (rest (string-split d ",")) ""))))
+       d-list)
+  )
 
 #|
 (evaluate body)
