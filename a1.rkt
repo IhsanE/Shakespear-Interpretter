@@ -139,11 +139,11 @@ Read through the starter code carefully. In particular, look for:
 
 (define (get-finis-count l)
   (foldl (lambda (x y) (if (string=? finis x) (+ 1 y) y)) 0 l))
-#|
+
 (define (get-dialogue l)
   (let* ([finis-count (get-finis-count body)])
    (get-dialogue-helper l finis-count 0))
-)|#
+)
 
 #|
     Return true iff list contains s.
@@ -189,6 +189,33 @@ Read through the starter code carefully. In particular, look for:
 |#
 (define (parse-settings-bindings s-list)
   (map (lambda (s) (list (first (string-split s ",")) (rest (string-split s ",")))) s-list)
+  )
+
+#|
+    Replace the first occurrence of 'Hamlet' in body with param.
+|#
+(define (replace-hamlet body param)
+  (string-replace body "Hamlet" param)
+  )
+
+#|
+    Return the body of the function called name.
+    Assumes that a function called name exists.
+    func-list is the list of functions given by (parse-settings-bindings).
+|#
+(define (func-search-helper name func-list)
+  (if (string=? (first (first func-list)) name) (string-join (rest (first func-list)) "")
+      (func-search-helper name (rest func-list)))
+  )
+
+#|
+    Helper for evaluating functions. Return a string where the contents are the
+    expression given by the function called name, with Hamlet replaced by param.
+    Assumes that the function exists and is formatted properly.
+    func-list is the list of functions given by (parse-settings-bindings).
+|#
+(define (func-parser name param func-list)
+  (replace-hamlet (func-search-helper name func-list) param)
   )
 
 #|
