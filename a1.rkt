@@ -126,20 +126,24 @@ Read through the starter code carefully. In particular, look for:
   (get-dramatis-helper l '()))
 
 (define (get-settings-helper l acc bool)
-  (if (and (empty? l) (eq? #f bool))
-      '()
-      (if (string=? settings (first l))
+  (if (string=? settings (first l))
       (get-settings-helper (rest l) acc #t)
       (if (and (string=? finis (first l)) bool)
           acc
           (if (eq? #t bool)
               (get-settings-helper (rest l) (append acc (list (first l))) #t)
-              (get-settings-helper (rest l) '() #f))))))
+              (get-settings-helper (rest l) '() #f)))))
 
 (define (get-settings l)
   (get-settings-helper l '() #f))
 
-<<<<<<< Updated upstream
+(define (get-finis-count l)
+  (foldl (lambda (x y) (if (string=? finis x) (+ 1 y) y)) 0 l))
+
+(define (get-dialogue l)
+  (let* ([finis-count (get-finis-count body)])
+   (get-dialogue-helper l finis-count 0))
+)
 
 #|
 Return true iff list contains s.
@@ -175,20 +179,6 @@ Given string 'desc' return the integer value of the description.
   (
    #t
    ))
-=======
-(define (get-finis-count l)
-  (foldl (lambda (x y) (if (string=? finis x) (+ 1 y) y)) 0 l))
-
-
-
-(define (get-dialogue l)
-  (let* ([finis-count (get-finis-count body)])
-   (get-dialogue-helper l finis-count 0))
-)
-;------------------------------------------------------------------------------
-; Main evaluation (YOUR WORK GOES HERE)
-;------------------------------------------------------------------------------
->>>>>>> Stashed changes
 
 #|
 (evaluate body)
@@ -201,11 +191,4 @@ Given string 'desc' return the integer value of the description.
 |#
 (define (evaluate body)
   ; TODO: Change this part!
-<<<<<<< Updated upstream
   (get-settings body))
-=======
-  body)
-
-
- (interpret "sample.txt")
->>>>>>> Stashed changes
