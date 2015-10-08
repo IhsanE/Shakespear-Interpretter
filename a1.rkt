@@ -334,4 +334,4 @@ Read through the starter code carefully. In particular, look for:
    ;(map (lambda (line) (replace-name (list (first line) (replace-personal-references line)) dramatis-section)
     ;                                         ) dialogue-section)))
 
-;(interpret "sample.txt")
+(interpret "name_lookup.txt")
