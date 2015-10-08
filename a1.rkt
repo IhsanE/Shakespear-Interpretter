@@ -111,6 +111,10 @@ Read through the starter code carefully. In particular, look for:
   (and (<= (string-length s1) (string-length s2))
        (equal? s1 (substring s2 0 (string-length s1)))))
 
+;------------------------------------------------------------------------------
+; Main evaluation (YOUR WORK GOES HERE)
+;------------------------------------------------------------------------------
+
 (define (get-dramatis-helper l acc)
   (if (string=? personae (first l))
       (get-dramatis-helper (rest l) acc)
@@ -133,9 +137,41 @@ Read through the starter code carefully. In particular, look for:
 (define (get-settings l)
   (get-settings-helper l '() #f))
 
-;------------------------------------------------------------------------------
-; Main evaluation (YOUR WORK GOES HERE)
-;------------------------------------------------------------------------------
+
+#|
+Return true iff list contains s.
+|#
+(define (list-contains list s)
+  (if (null? list) #f
+      (if (string=? (first list) s) #t (list-contains (rest list) s))))
+
+#|
+Return the number of bad words in desc.
+desc should be a list of words.
+|#
+(define (count-bad-words-helper desc)
+  (if (null? desc) 0 
+  (if (list-contains bad-words (first desc)) (+ 1 (count-bad-words-helper (rest desc)))
+      (count-bad-words-helper (rest desc))))
+  )
+
+#|
+Given string 'desc' return the integer value of the description.
+|#
+(define (eval-description-helper desc)
+   (if (> (count-bad-words-helper (string-split desc)) 0)
+       (* -1 (* (expt 2 (count-bad-words-helper (string-split desc))) (length (string-split desc))))
+       (length (string-split desc)))
+   )
+
+#|
+    Return a list of lists, where each inner list is a pair of
+    (<name>, <value>) for the Dramatis Personae section.
+|#
+(define (parse-dramatis-bindings d-list)
+  (
+   #t
+   ))
 
 #|
 (evaluate body)
@@ -149,6 +185,3 @@ Read through the starter code carefully. In particular, look for:
 (define (evaluate body)
   ; TODO: Change this part!
   (get-settings body))
-
-
- (interpret "sample.txt")
