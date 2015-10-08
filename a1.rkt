@@ -236,10 +236,16 @@ Read through the starter code carefully. In particular, look for:
   )
 
 #|
-    Replace 'The song of <name> and <param>' with the number that it evaluates to in dialogue.
+    Return true iff line is a function call.
+|#
+(define (is-line-a-function line))
+
+#|
+    Assuming that dialogue is a function call, replace the entire line with the body of the function, with
+    Hamlet replaced by the param.
 |#
 (define (replace-song-of dialogue)
-  #t
+  
   )
 
 #|
