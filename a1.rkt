@@ -240,8 +240,8 @@ Read through the starter code carefully. In particular, look for:
 #|
     Replace the first occurrence of 'Hamlet' in body with param.
 |#
-(define (replace-hamlet body param)
-  (string-replace body "Hamlet" param)
+(define (replace-hamlet body f-param)
+  (string-replace body param f-param)
   )
 
 #|
@@ -267,14 +267,19 @@ Read through the starter code carefully. In particular, look for:
 #|
     Return true iff line is a function call.
 |#
-(define (is-line-a-function line))
+(define (is-line-a-function line)
+   (prefix? call line)
+  )
 
 #|
     Assuming that dialogue is a function call, replace the entire line with the body of the function, with
     Hamlet replaced by the param.
 |#
 (define (replace-song-of dialogue)
-  
+  (func-parser (string-normalize-spaces (first (string-split (string-split dialogue call) "and")))
+               (string-normalize-spaces (string-join (rest (string-split (string-split dialogue call) "and")) "and"))
+               ;settings-section)
+               0) ; remove this
   )
 
 #|
@@ -306,7 +311,6 @@ Read through the starter code carefully. In particular, look for:
   (let* ([dramatis-section (get-dramatis body)]
          [settings-section (get-settings body)]
          [dialogue-section (get-dialogue body)])
-    #(replace-name (list-ref dialogue-section 0) dramatis-section)
     settings-section))
 
 (interpret "sample.txt")
