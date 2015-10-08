@@ -139,9 +139,33 @@ Read through the starter code carefully. In particular, look for:
 
 (define (get-finis-count l)
   (foldl (lambda (x y) (if (string=? finis x) (+ 1 y) y)) 0 l))
-#|
+
+(define (extract-dialogue l arr)
+  (if (empty? l)
+      arr
+      (extract-dialogue (rest (rest l)) (append arr (list (append (list (first l)) (list (first (rest l)))))))))
+
+(define (get-dialogue-helper l cap cur)
+  (if (eq? cap cur)
+  (extract-dialogue l '())
+  (if (string=? (first l) finis)
+      (get-dialogue-helper (rest l) cap (+ 1 cur))
+      (get-dialogue-helper (rest l) cap cur))))
+
 (define (get-dialogue l)
-  (let* ([finis-count (get-finis-count body)])
+  (let* ([finis-count (get-finis-count l)])
+   (get-dialogue-helper l finis-count 0))
+)
+#|
+(define (get-dialogue-helper l cap cur)
+  (if (string=? cap cur)
+  l
+  (if (string=? (first l) finis)
+      (get-dialogue (rest l) cap (+ 1 cur))
+      (get-dialogue (rest l) cap cur))))
+
+(define (get-dialogue l)
+  (let* ([finis-count (get-finis-count l)])
    (get-dialogue-helper l finis-count 0))
 )|#
 
@@ -202,4 +226,6 @@ Read through the starter code carefully. In particular, look for:
 |#
 (define (evaluate body)
   ; TODO: Change this part!
-  (get-settings body))
+  (get-dialogue body))
+
+(interpret "sample.txt")
