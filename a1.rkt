@@ -146,15 +146,15 @@ Read through the starter code carefully. In particular, look for:
 )|#
 
 #|
-Return true iff list contains s.
+    Return true iff list contains s.
 |#
 (define (list-contains list s)
   (if (null? list) #f
       (if (string=? (first list) s) #t (list-contains (rest list) s))))
 
 #|
-Return the number of bad words in desc.
-desc should be a list of words.
+    Return the number of bad words in desc.
+    desc should be a list of words.
 |#
 (define (count-bad-words-helper desc)
   (if (null? desc) 0 
@@ -163,7 +163,7 @@ desc should be a list of words.
   )
 
 #|
-Given string 'desc' return the integer value of the description.
+    Given string 'desc' return the integer value of the description.
 |#
 (define (eval-description-helper desc)
   (if (> (count-bad-words-helper (string-split desc)) 0)
@@ -180,6 +180,15 @@ Given string 'desc' return the integer value of the description.
   (map (lambda (d) (list (first (string-split d ","))
                          (eval-description-helper (string-join (rest (string-split d ",")) ""))))
        d-list)
+  )
+
+#|
+    Return a list of lists, where each inner list is a pair of
+    (<function name>, <expression>) for the settings section.
+    s-list is a list of string where each is a Settings line.
+|#
+(define (parse-settings-bindings s-list)
+  (map (lambda (s) (list (first (string-split s ",")) (rest (string-split s ",")))) s-list)
   )
 
 #|
