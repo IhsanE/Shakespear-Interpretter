@@ -14,3 +14,26 @@
 #6 Recursively iterate over each line of dialogue and make a list out of their values.
 
 #7 Done!
+
+EVALUATING SECTION
+
+#1 Replace all personal references with the <speakers name>
+
+#2 Replace the ‘song of <name> and <param>’ with the output when it’s passed to function-parser.
+
+#3 Look for arithmetic expression (there will only be one)
+
+   yes
+
+	#4 Evaluate the left/right sides
+	
+		#4.5 If word is in Dramatis Personae, replace with value
+
+	#5 Compute arithmetic expression
+   no
+
+	#6 Evaluate the whole thing
+
+		#7 Call #4.5
+
+#8 Return a list of the above values
