@@ -1,7 +1,5 @@
 #| Assignment 1 - Functional Shakespeare Interpreter
-
 Read through the starter code carefully. In particular, look for:
-
 - interpret: the main function used to drive the program.
   This is provided for you, and should not be changed.
 - evaluate: this is the main function you'll need to change.
@@ -65,7 +63,6 @@ Read through the starter code carefully. In particular, look for:
 #|
 (interpret filename)
   filename: a string representing the path to a FunShake file
-
   Returns a list of numbers produced when evaluating the FunShake file.
   You can complete this assignment without modifying this function at all,
   but you may change the implementation if you like. Please note that you may
@@ -81,7 +78,6 @@ Read through the starter code carefully. In particular, look for:
 #|
 (normalize-line str)
   str: the line string to normalize
-
   Remove trailing period and whitespace.
 |#
 (define (normalize-line str)
@@ -90,7 +86,6 @@ Read through the starter code carefully. In particular, look for:
 #|
 (remove-empty-and-comments strings)
   strings: a list of strings
-
   Removes all empty strings and FunShake comment strings from 'strings'.
 |#
 (define (remove-empty-and-comments strings)
@@ -104,7 +99,6 @@ Read through the starter code carefully. In particular, look for:
 #|
 (prefix? s1 s2)
   s1, s2: strings
-
   Returns whether 's1' is a prefix of 's2'.
 |#
 (define (prefix? s1 s2)
@@ -140,10 +134,33 @@ Read through the starter code carefully. In particular, look for:
 (define (get-finis-count l)
   (foldl (lambda (x y) (if (string=? finis x) (+ 1 y) y)) 0 l))
 
+(define (extract-dialogue l arr)
+  (if (empty? l)
+      arr
+      (extract-dialogue (rest (rest l)) (append arr (list (append (list (first l)) (list (first (rest l)))))))))
+
+(define (get-dialogue-helper l cap cur)
+  (if (eq? cap cur)
+  (extract-dialogue l '())
+  (if (string=? (first l) finis)
+      (get-dialogue-helper (rest l) cap (+ 1 cur))
+      (get-dialogue-helper (rest l) cap cur))))
+
 (define (get-dialogue l)
-  (let* ([finis-count (get-finis-count body)])
+  (let* ([finis-count (get-finis-count l)])
    (get-dialogue-helper l finis-count 0))
 )
+#|
+(define (get-dialogue-helper l cap cur)
+  (if (string=? cap cur)
+  l
+  (if (string=? (first l) finis)
+      (get-dialogue (rest l) cap (+ 1 cur))
+      (get-dialogue (rest l) cap cur))))
+(define (get-dialogue l)
+  (let* ([finis-count (get-finis-count l)])
+   (get-dialogue-helper l finis-count 0))
+)|#
 
 #|
     Return true iff list contains s.
@@ -222,11 +239,15 @@ Read through the starter code carefully. In particular, look for:
 (evaluate body)
   body: a list of lines corresponding to the semantically meaningful text
   of a FunShake file.
-
   Returns a list of numbers produced when evaluating the FunShake file.
   This should be the main starting point of your work! Currently,
   it just outputs the semantically meaningful lines in the file.
 |#
 (define (evaluate body)
   ; TODO: Change this part!
-  (get-settings body))
+  (let* ([dramatis-section (get-dramatis body)]
+         [settings-section (get-settings body)]
+         [dialogue-section (get-dialogue body)])
+    dramatis-section))
+
+(interpret "sample.txt")
