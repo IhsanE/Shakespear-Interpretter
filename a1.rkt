@@ -226,6 +226,9 @@ Read through the starter code carefully. In particular, look for:
 |#
 (define (evaluate body)
   ; TODO: Change this part!
-  (get-dialogue body))
+  (let* ([dramatis-section (get-dramatis body)]
+         [settings-section (get-settings body)]
+         [dialogue-section (get-dialogue body)])
+    dramatis-section))
 
 (interpret "sample.txt")
