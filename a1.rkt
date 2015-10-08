@@ -286,8 +286,8 @@ Read through the starter code carefully. In particular, look for:
     Hamlet replaced by the param.
 |#
 (define (replace-song-of dialogue func-list)
-  (func-parser (string-normalize-spaces (first (string-split (first (string-split dialogue call)) "and")))
-               (string-normalize-spaces (string-join (rest (string-split (first (string-split dialogue call)) "and")) "and"))
+  (func-parser (string-normalize-spaces (first (string-split (first (string-split dialogue call)) " and ")))
+               (string-normalize-spaces (string-join (rest (string-split (first (string-split dialogue call)) " and ")) " and "))
                func-list)
   )
 
