@@ -108,15 +108,23 @@ Read through the starter code carefully. In particular, look for:
 ;------------------------------------------------------------------------------
 ; Main evaluation (YOUR WORK GOES HERE)
 ;------------------------------------------------------------------------------
+(define (get-exp name name-list)
+  (if (empty? name-list)
+      ""
+      (if (string=? name (first (first name-list)))
+          (second (first name-list))
+          (get-exp name (rest name-list)))))
+
 (define (replace-name-helper sentence acc name name-list)
   (if (empty? sentence)
       acc
-      (if (contains? self-refs (first sentence))
-          (replace-personal-references-helper (rest sentence) (append acc (list name)) name)
-          (replace-personal-references-helper (rest sentence) (append acc (list (first sentence))) name))))
+      (if (string=? name (first sentence))
+          (replace-name-helper (rest sentence) (append acc (list (get-exp name name-list)) ) name name-list)
+          (replace-name-helper (rest sentence) (append acc (list (first sentence))) name name-list)
+          )))
 
 (define (replace-name l name-list)
-  (string-join (replace-name-helper (string-split (second l)) '() (first l)) " " name-list))
+  (string-join (replace-name-helper (string-split (second l)) '() (first l) name-list) " "))
 
 (define (contains? l i)
   (if (empty? l) #f
@@ -149,13 +157,15 @@ Read through the starter code carefully. In particular, look for:
   (get-dramatis-helper l '()))
 
 (define (get-settings-helper l acc bool)
+ (if (empty? l)
+  '()
   (if (string=? settings (first l))
       (get-settings-helper (rest l) acc #t)
       (if (and (string=? finis (first l)) bool)
           acc
           (if (eq? #t bool)
               (get-settings-helper (rest l) (append acc (list (description-parser (first l)))) #t)
-              (get-settings-helper (rest l) '() #f)))))
+              (get-settings-helper (rest l) '() #f))))))
 
 (define (get-settings l)
   (get-settings-helper l '() #f))
@@ -275,11 +285,10 @@ Read through the starter code carefully. In particular, look for:
     Assuming that dialogue is a function call, replace the entire line with the body of the function, with
     Hamlet replaced by the param.
 |#
-(define (replace-song-of dialogue)
-  (func-parser (string-normalize-spaces (first (string-split (string-split dialogue call) "and")))
-               (string-normalize-spaces (string-join (rest (string-split (string-split dialogue call) "and")) "and"))
-               ;settings-section)
-               0) ; remove this
+(define (replace-song-of dialogue func-list)
+  (func-parser (string-normalize-spaces (first (string-split (first (string-split dialogue call)) "and")))
+               (string-normalize-spaces (string-join (rest (string-split (first (string-split dialogue call)) "and")) "and"))
+               func-list)
   )
 
 #|
@@ -287,16 +296,24 @@ Read through the starter code carefully. In particular, look for:
     and/or regular or bad words.
 |#
 (define (math-eval expr)
+  (if (string=? expr "") 0
   (if (and (= (length (string-split expr add)) 1) (= (length (string-split expr mult)) 1)) (eval-description-helper expr)
       (if (< (string-length (first (string-split expr add))) (string-length (first (string-split expr mult))))
              ; left + expr(right)
                  (+ (math-eval (first (string-split expr add))) (math-eval (string-join (rest (string-split expr add)) add)))
              ; left * expr(right)
-                 (* (math-eval (first (string-split expr mult))) (math-eval (string-join (rest (string-split expr mult)) mult)))
-             
+                 (* (math-eval (first (string-split expr mult))) (math-eval (string-join (rest (string-split expr mult)) mult))) 
+      )
+  ))
+)
+
+(define (eval-line line func-list)
+  (if (is-line-a-function line)
+      ; Eval function
+      (eval-line (replace-song-of line func-list) func-list)
+      (math-eval line)
       )
   )
-)
 
 #|
 (evaluate body)
@@ -307,10 +324,14 @@ Read through the starter code carefully. In particular, look for:
   it just outputs the semantically meaningful lines in the file.
 |#
 (define (evaluate body)
-  ; TODO: Change this part!
   (let* ([dramatis-section (get-dramatis body)]
          [settings-section (get-settings body)]
          [dialogue-section (get-dialogue body)])
-    settings-section))
 
-(interpret "sample.txt")
+    (map (lambda (line) (eval-line (replace-name (list (first line) (replace-personal-references line)) dramatis-section)
+                                              settings-section)) dialogue-section)))
+
+   ;(map (lambda (line) (replace-name (list (first line) (replace-personal-references line)) dramatis-section)
+    ;                                         ) dialogue-section)))
+
+;(interpret "sample.txt")

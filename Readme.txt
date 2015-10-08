@@ -39,3 +39,11 @@ EVALUATING SECTION
 		#7 Call #4.5
 
 #8 Return a list of the above values
+
+
+
+
+(
+(“name” “sentence”)
+()
+)
