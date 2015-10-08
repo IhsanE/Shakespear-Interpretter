@@ -108,13 +108,42 @@ Read through the starter code carefully. In particular, look for:
 ;------------------------------------------------------------------------------
 ; Main evaluation (YOUR WORK GOES HERE)
 ;------------------------------------------------------------------------------
+(define (replace-name-helper sentence acc name name-list)
+  (if (empty? sentence)
+      acc
+      (if (contains? self-refs (first sentence))
+          (replace-personal-references-helper (rest sentence) (append acc (list name)) name)
+          (replace-personal-references-helper (rest sentence) (append acc (list (first sentence))) name))))
+
+(define (replace-name l name-list)
+  (string-join (replace-name-helper (string-split (second l)) '() (first l)) " " name-list))
+
+(define (contains? l i)
+  (if (empty? l) #f
+      (or (string=? (first l) i) (contains? (rest l) i))))
+
+(define (replace-personal-references-helper sentence acc name)
+  (if (empty? sentence)
+      acc
+      (if (contains? self-refs (first sentence))
+          (replace-personal-references-helper (rest sentence) (append acc (list name)) name)
+          (replace-personal-references-helper (rest sentence) (append acc (list (first sentence))) name))))
+
+(define (replace-personal-references l)
+  (string-join (replace-personal-references-helper (string-split (second l)) '() (first l)) " "))
+
+(define (description-parser str)
+  (let* ([l (string-split str)]
+         [first-elem (substring (first l) 0 (- (string-length (first l)) 1))]
+         [rest-elems (rest l)])
+    (list first-elem (string-join rest-elems " "))))
 
 (define (get-dramatis-helper l acc)
   (if (string=? personae (first l))
       (get-dramatis-helper (rest l) acc)
       (if (string=? finis (first l))
           acc
-          (get-dramatis-helper (rest l) (append acc (list (first l)))))))
+          (get-dramatis-helper (rest l) (append acc (list (description-parser (first l))))))))
 
 (define (get-dramatis l)
   (get-dramatis-helper l '()))
@@ -125,7 +154,7 @@ Read through the starter code carefully. In particular, look for:
       (if (and (string=? finis (first l)) bool)
           acc
           (if (eq? #t bool)
-              (get-settings-helper (rest l) (append acc (list (first l))) #t)
+              (get-settings-helper (rest l) (append acc (list (description-parser (first l)))) #t)
               (get-settings-helper (rest l) '() #f)))))
 
 (define (get-settings l)
@@ -137,7 +166,7 @@ Read through the starter code carefully. In particular, look for:
 (define (extract-dialogue l arr)
   (if (empty? l)
       arr
-      (extract-dialogue (rest (rest l)) (append arr (list (append (list (first l)) (list (first (rest l)))))))))
+      (extract-dialogue (rest (rest l)) (append arr (list (append (list (substring (first l) 0 (- (string-length (first l)) 1))) (list (first (rest l)))))))))
 
 (define (get-dialogue-helper l cap cur)
   (if (eq? cap cur)
@@ -277,6 +306,7 @@ Read through the starter code carefully. In particular, look for:
   (let* ([dramatis-section (get-dramatis body)]
          [settings-section (get-settings body)]
          [dialogue-section (get-dialogue body)])
-    dramatis-section))
+    #(replace-name (list-ref dialogue-section 0) dramatis-section)
+    settings-section))
 
 (interpret "sample.txt")
