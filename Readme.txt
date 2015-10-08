@@ -21,6 +21,8 @@ EVALUATING SECTION
 
 #2 Replace the ‘song of <name> and <param>’ with the output when it’s passed to function-parser.
 
+#2.5 Evaluate #2 using #3.
+
 #3 Look for arithmetic expression (there will only be one)
 
    yes

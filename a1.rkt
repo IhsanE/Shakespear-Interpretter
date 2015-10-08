@@ -236,6 +236,29 @@ Read through the starter code carefully. In particular, look for:
   )
 
 #|
+    Replace 'The song of <name> and <param>' with the number that it evaluates to in dialogue.
+|#
+(define (replace-song-of dialogue)
+  #t
+  )
+
+#|
+    Return the value of expr, where expr is a string that contains any number of nested arithmetic functions
+    and/or regular or bad words.
+|#
+(define (math-eval expr)
+  (if (and (= (length (string-split expr add)) 1) (= (length (string-split expr mult)) 1)) (eval-description-helper expr)
+      (if (< (string-length (first (string-split expr add))) (string-length (first (string-split expr mult))))
+             ; left + expr(right)
+                 (+ (math-eval (first (string-split expr add))) (math-eval (string-join (rest (string-split expr add)) add)))
+             ; left * expr(right)
+                 (* (math-eval (first (string-split expr mult))) (math-eval (string-join (rest (string-split expr mult)) mult)))
+             
+      )
+  )
+)
+
+#|
 (evaluate body)
   body: a list of lines corresponding to the semantically meaningful text
   of a FunShake file.
