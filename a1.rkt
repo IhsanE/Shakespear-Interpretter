@@ -108,6 +108,7 @@ Read through the starter code carefully. In particular, look for:
 ;------------------------------------------------------------------------------
 ; Main evaluation (YOUR WORK GOES HERE)
 ;------------------------------------------------------------------------------
+#|
 (define (get-exp name name-list)
   (if (empty? name-list)
       ""
@@ -115,16 +116,24 @@ Read through the starter code carefully. In particular, look for:
           (second (first name-list))
           (get-exp name (rest name-list)))))
 
-(define (replace-name-helper sentence acc name name-list)
+(define (replace-name-helper sentence acc name-list)
   (if (empty? sentence)
       acc
-      (if (string=? name (first sentence))
-          (replace-name-helper (rest sentence) (append acc (list (get-exp name name-list)) ) name name-list)
-          (replace-name-helper (rest sentence) (append acc (list (first sentence))) name name-list)
-          )))
+      (if (string=? "" (get-exp (first sentence) name-list))
+          (replace-name-helper (rest sentence) (append acc (list (first sentence))) name-list)
+          (replace-name-helper (rest sentence) (append acc (list (get-exp (first sentence) name-list))) name-list))))
 
 (define (replace-name l name-list)
-  (string-join (replace-name-helper (string-split (second l)) '() (first l) name-list) " "))
+  (string-join (replace-name-helper (string-split l) '()  name-list) " "))
+|#
+
+#|
+    l is a string that is guaranteed to be one word. If it is a name defined in dramatis personae, return that
+    name's binding, otherwise return l.
+|#
+(define (replace-name l name-list)
+  l ; TODO
+  )
 
 (define (contains? l i)
   (if (empty? l) #f
@@ -200,6 +209,13 @@ Read through the starter code carefully. In particular, look for:
   (let* ([finis-count (get-finis-count l)])
    (get-dialogue-helper l finis-count 0))
 )|#
+
+#|
+    Return true iff s is one word.
+|#
+(define (is-one-word s)
+  (= (length (string-split s " ")) 1)
+  )
 
 #|
     Return true iff list contains s.
@@ -285,33 +301,42 @@ Read through the starter code carefully. In particular, look for:
     Assuming that dialogue is a function call, replace the entire line with the body of the function, with
     Hamlet replaced by the param.
 |#
-(define (replace-song-of dialogue func-list)
+(define (replace-song-of dialogue func-list name-list)
+  (let* ([param (string-normalize-spaces (string-join (rest (string-split (first (string-split dialogue call)) " and ")) " and "))])
   (func-parser (string-normalize-spaces (first (string-split (first (string-split dialogue call)) " and ")))
-               (string-normalize-spaces (string-join (rest (string-split (first (string-split dialogue call)) " and ")) " and "))
+               (if (is-one-word param) (replace-name param name-list) param)
                func-list)
-  )
+  ))
 
 #|
     Return the value of expr, where expr is a string that contains any number of nested arithmetic functions
     and/or regular or bad words.
 |#
-(define (math-eval expr)
+(define (math-eval expr name-list)
   (if (string=? expr "") 0
   (if (and (= (length (string-split expr add)) 1) (= (length (string-split expr mult)) 1)) (eval-description-helper expr)
       (if (< (string-length (first (string-split expr add))) (string-length (first (string-split expr mult))))
              ; left + expr(right)
-                 (+ (math-eval (first (string-split expr add))) (math-eval (string-join (rest (string-split expr add)) add)))
+                 (let* ([left (first (string-split expr add))]
+                        [right (string-join (rest (string-split expr add)) add)])
+                 (+ (math-eval (if (is-one-word left) (replace-name left name-list) left) name-list)
+                    (math-eval (if (is-one-word right) (replace-name right name-list) right) name-list)))
              ; left * expr(right)
-                 (* (math-eval (first (string-split expr mult))) (math-eval (string-join (rest (string-split expr mult)) mult))) 
+                 (let* ([left (first (string-split expr mult))]
+                        [right (string-join (rest (string-split expr mult)) mult)])
+                 (* (math-eval (if (is-one-word left) (replace-name left name-list) left) name-list)
+                    (math-eval (if (is-one-word right) (replace-name right name-list) right) name-list)))
       )
   ))
 )
 
-(define (eval-line line func-list)
+(define (eval-line line func-list name-list)
   (if (is-line-a-function line)
       ; Eval function
-      (eval-line (replace-song-of line func-list) func-list)
-      (math-eval line)
+      (eval-line (replace-song-of line func-list name-list) func-list)
+      (if (is-one-word line)
+          (math-eval (replace-name line name-list) name-list)
+          (math-eval line name-list))
       )
   )
 
@@ -328,8 +353,8 @@ Read through the starter code carefully. In particular, look for:
          [settings-section (get-settings body)]
          [dialogue-section (get-dialogue body)])
 
-    (map (lambda (line) (eval-line (replace-name (list (first line) (replace-personal-references line)) dramatis-section)
-                                              settings-section)) dialogue-section)))
+    (map (lambda (line) (eval-line (replace-personal-references line)
+                                              settings-section dramatis-section)) dialogue-section)))
 
    ;(map (lambda (line) (replace-name (list (first line) (replace-personal-references line)) dramatis-section)
     ;                                         ) dialogue-section)))
