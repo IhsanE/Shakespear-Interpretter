@@ -132,8 +132,12 @@ Read through the starter code carefully. In particular, look for:
     name's binding, otherwise return l.
 |#
 (define (replace-name l name-list)
-  l ; TODO
-  )
+  (let* ([name (string-normalize-spaces l)])
+  (if (empty? name-list)
+      name
+      (if (string=? name (first (first name-list)))
+          (second (first name-list))
+          (replace-name name (rest name-list))))))
 
 (define (contains? l i)
   (if (empty? l) #f
@@ -333,7 +337,7 @@ Read through the starter code carefully. In particular, look for:
 (define (eval-line line func-list name-list)
   (if (is-line-a-function line)
       ; Eval function
-      (eval-line (replace-song-of line func-list name-list) func-list)
+      (eval-line (replace-song-of line func-list name-list) func-list name-list)
       (if (is-one-word line)
           (math-eval (replace-name line name-list) name-list)
           (math-eval line name-list))
